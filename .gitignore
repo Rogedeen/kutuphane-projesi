@@ -1,0 +1,24 @@
+# Python / Backend
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+backend/bookstore.db
+
+# Node.js / Frontend
+node_modules/
+.next/
+out/
+build/
+npm-debug.log*
+
+# Docker
+docker-compose.override.yml
+.env.docker
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
