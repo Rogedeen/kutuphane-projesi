@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { getBooks, getSales, adminReset, adminAddJunk, getToken, createBook, deleteBook, createUser } from "@/lib/api";
+import { getBooks, getSales, adminReset, adminAddJunk, getToken, createBook, updateBook, deleteBook, createUser } from "@/lib/api";
 import { LogOut, RefreshCw, BookOpen, Trash2, Edit, Book, Users, Home, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
@@ -18,6 +18,7 @@ export default function DashboardPage() {
   // Modals state
   const [showBookModal, setShowBookModal] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
+  const [editingBook, setEditingBook] = useState<any>(null);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -88,13 +89,24 @@ export default function DashboardPage() {
 
   const handleCreateBook = async (book: any) => {
     try {
-      await createBook(book);
-      toast.success("Kitap başarıyla eklendi");
+      if (editingBook) {
+        await updateBook(editingBook.id, book);
+        toast.success("Kitap başarıyla güncellendi");
+      } else {
+        await createBook(book);
+        toast.success("Kitap başarıyla eklendi");
+      }
       setShowBookModal(false);
+      setEditingBook(null);
       fetchData();
     } catch(e: unknown) {
-      toast.error("Kitap oluşturulurken hata oluştu");
+      toast.error(editingBook ? "Kitap güncellenirken hata oluştu" : "Kitap oluşturulurken hata oluştu");
     }
+  };
+
+  const openEditModal = (book: any) => {
+    setEditingBook(book);
+    setShowBookModal(true);
   };
 
   const handleCreateUser = async (user: any) => {
@@ -126,7 +138,7 @@ export default function DashboardPage() {
            <button className="flex items-center gap-3 w-full px-4 py-2 bg-zinc-900 rounded-md text-zinc-100 text-sm font-medium transition-all">
              <Home className="w-4 h-4" /> Kontrol Paneli
            </button>
-           <button onClick={() => setShowBookModal(true)} className="flex items-center gap-3 w-full px-4 py-2 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/50 text-sm font-medium transition-all">
+           <button onClick={() => { setEditingBook(null); setShowBookModal(true); }} className="flex items-center gap-3 w-full px-4 py-2 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/50 text-sm font-medium transition-all">
              <Book className="w-4 h-4" /> Kitap Ekle
            </button>
            <button onClick={() => setShowUserModal(true)} className="flex items-center gap-3 w-full px-4 py-2 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/50 text-sm font-medium transition-all">
@@ -182,7 +194,7 @@ export default function DashboardPage() {
                <p className="text-zinc-500 text-[11px] sm:text-xs mt-4 truncate">Son 30 günlük veriler</p>
             </div>
 
-            <div className="bg-zinc-900/50 rounded-xl p-6 border border-zinc-800 border-dashed shadow-sm flex flex-col justify-center items-center cursor-pointer hover:bg-zinc-800/50 transition-colors group overflow-hidden" onClick={() => setShowBookModal(true)}>
+            <div className="bg-zinc-900/50 rounded-xl p-6 border border-zinc-800 border-dashed shadow-sm flex flex-col justify-center items-center cursor-pointer hover:bg-zinc-800/50 transition-colors group overflow-hidden" onClick={() => { setEditingBook(null); setShowBookModal(true); }}>
                 <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shrink-0">
                   <Book className="w-4 h-4 text-zinc-300" />
                 </div>
@@ -232,7 +244,7 @@ export default function DashboardPage() {
                           </td>
                           <td className="py-3 px-6 text-right">
                              <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button className="p-1.5 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded transition-colors" title="Düzenle">
+                                <button onClick={() => openEditModal(book)} className="p-1.5 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded transition-colors" title="Düzenle">
                                   <Edit className="w-3.5 h-3.5" />
                                 </button>
                                 <button onClick={() => handleDeleteBook(book.id)} className="p-1.5 text-zinc-500 hover:text-red-400 hover:bg-zinc-800 rounded transition-colors" title="Sil">
@@ -263,7 +275,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {showBookModal && <BookModal onClose={() => setShowBookModal(false)} onSubmit={handleCreateBook} />}
+      {showBookModal && <BookModal onClose={() => { setShowBookModal(false); setEditingBook(null); }} onSubmit={handleCreateBook} initialData={editingBook} />}
       {showUserModal && <UserModal onClose={() => setShowUserModal(false)} onSubmit={handleCreateUser} />}
     </div>
   );
