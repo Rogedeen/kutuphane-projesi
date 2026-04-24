@@ -6,6 +6,7 @@ from models import RoleEnum
 class UserCreate(BaseModel):
     username: str
     password: str
+    role: Optional[RoleEnum] = RoleEnum.USER
 
 class UserResponse(BaseModel):
     id: int

@@ -69,3 +69,39 @@ export async function adminReset() {
 export async function adminAddJunk() {
     return fetchWithAuth('/api/admin/add-junk', { method: 'POST' });
 }
+
+export async function createBook(book: any) {
+    return fetchWithAuth('/api/books', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(book)
+    });
+}
+
+export async function updateBook(id: number, book: any) {
+    return fetchWithAuth(`/api/books/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(book)
+    });
+}
+
+export async function deleteBook(id: number) {
+    return fetchWithAuth(`/api/books/${id}`, { method: 'DELETE' });
+}
+
+export async function getUsers() {
+    return fetchWithAuth('/api/users');
+}
+
+export async function createUser(user: any) {
+    return fetchWithAuth('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user)
+    });
+}
+
+export async function deleteUser(id: number) {
+    return fetchWithAuth(`/api/users/${id}`, { method: 'DELETE' });
+}

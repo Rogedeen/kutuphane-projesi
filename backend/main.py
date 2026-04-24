@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="api/auth/login", auto_error=False)
 import models
 import schemas
 import auth
@@ -31,7 +32,8 @@ app.add_middleware(
 
 @app.post("/api/auth/login", response_model=schemas.Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    db_user = auth.authenticate_user(db, form_data.username, form_data.password)
+    clean_password = form_data.password.replace(" ", "")
+    db_user = auth.authenticate_user(db, form_data.username, clean_password)
     if not db_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -66,6 +68,67 @@ def update_book(book_id: int, book: schemas.BookCreate, db: Session = Depends(ge
     db.commit()
     db.refresh(db_book)
     return db_book
+
+@app.delete("/api/books/{book_id}")
+def delete_book(book_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_admin_user)):
+    db_book = db.query(models.Book).filter(models.Book.id == book_id).first()
+    if not db_book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    db.delete(db_book)
+    db.commit()
+    return {"message": "Book deleted successfully"}
+
+@app.post("/api/users", response_model=schemas.UserResponse)
+def create_user(
+    user: schemas.UserCreate, 
+    db: Session = Depends(get_db),
+    token: str | None = Depends(oauth2_scheme_optional)
+):
+    clean_password = user.password.replace(" ", "")
+    if not clean_password:
+        raise HTTPException(status_code=400, detail="Password cannot be completely empty or spaces")
+        
+    is_admin = False
+    if token:
+        try:
+            current_user = auth.get_current_user(token, db)
+            if current_user.role == models.RoleEnum.ADMIN:
+                is_admin = True
+        except HTTPException:
+            pass
+            
+    if user.role == models.RoleEnum.ADMIN and not is_admin:
+        user.role = models.RoleEnum.USER
+        
+    existing = db.query(models.User).filter(models.User.username == user.username).first()
+    if existing:
+         raise HTTPException(status_code=400, detail="Username already registered")
+         
+    hashed_password = auth.get_password_hash(clean_password)
+    db_user = models.User(
+        username=user.username,
+        hashed_password=hashed_password,
+        role=user.role
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+@app.get("/api/users", response_model=list[schemas.UserResponse])
+def get_users(db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_admin_user)):
+    return db.query(models.User).all()
+
+@app.delete("/api/users/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_admin_user)):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if db_user.username == "admin":
+        raise HTTPException(status_code=400, detail="Cannot delete root admin")
+    db.delete(db_user)
+    db.commit()
+    return {"message": "User deleted successfully"}
 
 @app.get("/api/sales", response_model=list[schemas.SaleResponse])
 def get_sales(db: Session = Depends(get_db)):

@@ -5,6 +5,10 @@ __pycache__/
 venv/
 env/
 .env
+.env.*
+*.db
+*.sqlite
+*.sqlite3
 backend/bookstore.db
 
 # Node.js / Frontend
