@@ -44,7 +44,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         data={"sub": db_user.username, "role": db_user.role},
         expires_delta=auth.timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "role": db_user.role.value}
 
 @app.get("/api/books", response_model=list[schemas.BookResponse])
 def get_books(db: Session = Depends(get_db)):

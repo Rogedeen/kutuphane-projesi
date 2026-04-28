@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { login, setToken } from "@/lib/api";
+import { login, setToken, setUserRole } from "@/lib/api";
 import { toast } from "sonner";
 import { BookOpen, User, Lock, ArrowRight } from "lucide-react";
 
@@ -15,11 +15,11 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const data = await login(username, password);
-      // Wait for 300ms smoothly for the loading animation aesthetic
       await new Promise(r => setTimeout(r, 300));
       setToken(data.access_token);
+      setUserRole(data.role);
       toast.success("Kimlik doğrulama başarılı");
-      window.location.href = "/dashboard";
+      window.location.href = data.role === "ADMIN" ? "/dashboard" : "/store";
     } catch (err: unknown) {
       if (err instanceof Error) {
         toast.error(err.message || "Geçersiz bilgiler");
