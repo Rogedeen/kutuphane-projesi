@@ -1,10 +1,10 @@
-# 📚 Kütüphane Yönetim Sistemi
+#  Kütüphane Yönetim Sistemi
 
 Rol tabanlı erişim kontrolüne sahip modern kütüphane yönetim sistemi. Yöneticiler kitap ve kullanıcı CRUD işlemleri yapabilir; standart kullanıcılar kitapları sepete ekleyip satın alabilir ve satış istatistiklerini görüntüleyebilir.
 
 ---
 
-## 🚀 Özellikler
+##  Özellikler
 
 ### Yönetici (Admin)
 - **Kitap Yönetimi:** Kitap ekleme, düzenleme, silme
@@ -22,7 +22,7 @@ Rol tabanlı erişim kontrolüne sahip modern kütüphane yönetim sistemi. Yön
 
 ---
 
-## 🏗️ Teknoloji Yığını
+##  Teknoloji Yığını
 
 | Katman | Teknoloji |
 |---|---|
@@ -34,7 +34,7 @@ Rol tabanlı erişim kontrolüne sahip modern kütüphane yönetim sistemi. Yön
 
 ---
 
-## ⚡ Kurulum & Çalıştırma
+##  Kurulum & Çalıştırma
 
 ### Gereksinimler
 - [Docker Desktop](https://www.docker.com/products/docker-desktop)
@@ -62,7 +62,7 @@ docker-compose up -d
 
 ---
 
-## 🔐 Test Kullanıcıları
+##  Test Kullanıcıları
 
 | Kullanıcı Adı | Şifre | Rol | Yönlendirme |
 |---|---|---|---|
@@ -71,7 +71,7 @@ docker-compose up -d
 
 ---
 
-## 🗂️ Proje Yapısı
+##  Proje Yapısı
 
 ```
 kutuphane-projesi/
@@ -100,7 +100,7 @@ kutuphane-projesi/
 
 ---
 
-## 🔌 API Endpoint'leri
+##  API Endpoint'leri
 
 ### Kimlik Doğrulama
 
@@ -142,7 +142,7 @@ kutuphane-projesi/
 
 ---
 
-## ⌨️ Klavye Kısayolları (Admin)
+##  Klavye Kısayolları (Admin)
 
 | Kısayol | İşlem |
 |---|---|
@@ -151,7 +151,7 @@ kutuphane-projesi/
 
 ---
 
-## 📐 Mimari Kararlar
+##  Mimari Kararlar
 
 - **Single Responsibility:** `lib/types.ts` tüm interface'leri, `lib/api.ts` tüm HTTP çağrılarını yönetir
 - **Rol Tabanlı Yönlendirme:** Login sonrası `role` alanına göre admin `/dashboard`'a, user `/store`'a yönlenir

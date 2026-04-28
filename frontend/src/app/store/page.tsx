@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { getBooks, createSale, getToken, getUserRole, removeToken, removeUserRole } from "@/lib/api";
+import { getBooks, createSale, getToken, getUserRole, removeToken, removeUserRole, adminReset } from "@/lib/api";
 import { Book, CartItem } from "@/lib/types";
-import { BookOpen, ShoppingCart, LogOut, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
+import { BookOpen, ShoppingCart, LogOut, Plus, Minus, Trash2, ShoppingBag, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 // ─── Sorumluluklar ───────────────────────────────────────────────────────────
@@ -106,10 +106,24 @@ export default function StorePage() {
             <BookOpen className="w-4 h-4" /> Kitap Mağazası
           </div>
         </nav>
-        <div className="mt-auto px-4 w-full">
+        <div className="mt-auto px-4 w-full flex flex-col gap-2">
+          <button
+            onClick={async () => {
+              try {
+                await adminReset();
+                toast.success("Sistem başarıyla sıfırlandı!");
+                window.location.reload();
+              } catch {
+                toast.error("Sıfırlama başarısız oldu");
+              }
+            }}
+            className="flex items-center gap-3 w-full px-4 py-2 rounded-md text-zinc-400 hover:text-white transition-all text-sm font-medium border border-transparent hover:border-zinc-800"
+          >
+            <RefreshCw className="w-4 h-4" /> Sistemi Sıfırla
+          </button>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-4 py-2 rounded-md text-zinc-400 hover:text-zinc-100 transition-all text-sm font-medium border border-transparent hover:border-zinc-800"
+            className="flex items-center gap-3 w-full px-4 py-2 rounded-md text-zinc-400 hover:text-white transition-all text-sm font-medium border border-transparent hover:border-zinc-800"
           >
             <LogOut className="w-4 h-4" /> Çıkış Yap
           </button>

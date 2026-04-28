@@ -160,7 +160,7 @@ def update_user_role(
     return db_user
 
 @app.post("/api/admin/reset")
-def reset_database(db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_admin_user)):
+def reset_database(db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     seed.reset_and_seed(db)
     return {"message": "Database reset to golden state successfully"}
 
