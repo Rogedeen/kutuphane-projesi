@@ -11,6 +11,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
 
+  const toggleRegistering = () => {
+    setIsRegistering(!isRegistering);
+    setUsername("");
+    setPassword("");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -100,7 +106,7 @@ export default function LoginPage() {
 
             <div className="mt-6 text-center">
               <button 
-                onClick={() => setIsRegistering(!isRegistering)}
+                onClick={toggleRegistering}
                 type="button"
                 className="text-sm text-zinc-400 hover:text-white transition-colors"
               >
