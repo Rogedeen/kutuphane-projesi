@@ -32,3 +32,12 @@ docker-compose up -d
 |---|---|---|---|
 | `admin` | `admin123` | ADMIN | `/dashboard` |
 | `user` | `user123` | USER | `/store` |
+
+---
+
+##  Klavye Kısayolları (Admin)
+
+| Kısayol | İşlem |
+|---|---|
+| `Ctrl+Shift+R` | Sistemi sıfırla |
+| `Ctrl+Shift+J` | Test verisi (Junk) ekle |
