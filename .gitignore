@@ -26,3 +26,9 @@ docker-compose.override.yml
 .DS_Store
 .idea/
 .vscode/
+
+# Custom Exclusions
+agents.md
+claude.md
+demo.jpeg
+demo.jpg
