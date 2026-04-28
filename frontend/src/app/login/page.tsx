@@ -1,30 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { login, setToken, setUserRole } from "@/lib/api";
+import { login, registerUser, setToken, setUserRole } from "@/lib/api";
 import { toast } from "sonner";
-import { BookOpen, User, Lock, ArrowRight } from "lucide-react";
+import { BookOpen, User, Lock, ArrowRight, UserPlus } from "lucide-react";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
+      if (isRegistering) {
+        await registerUser(username, password);
+        toast.success("Kayıt başarılı! Giriş yapılıyor...");
+      }
+      
       const data = await login(username, password);
       await new Promise(r => setTimeout(r, 300));
       setToken(data.access_token);
       setUserRole(data.role);
-      toast.success("Kimlik doğrulama başarılı");
+      if (!isRegistering) {
+        toast.success("Kimlik doğrulama başarılı");
+      }
       window.location.href = data.role === "ADMIN" ? "/dashboard" : "/store";
     } catch (err: unknown) {
       if (err instanceof Error) {
-        toast.error(err.message || "Geçersiz bilgiler");
+        toast.error(err.message || "İşlem başarısız");
       } else {
-        toast.error("Geçersiz bilgiler");
+        toast.error("İşlem başarısız");
       }
     } finally {
       setLoading(false);
@@ -37,13 +45,17 @@ export default function LoginPage() {
         <div className="w-full max-w-sm bg-[#0a0a0a] p-8 sm:p-10 rounded-[24px] border border-zinc-800 shadow-2xl relative">
             <div className="flex flex-col items-center mb-8">
                 <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center border border-zinc-200 mb-6 shadow-sm">
-                    <BookOpen className="w-6 h-6 text-black" />
+                    {isRegistering ? <UserPlus className="w-6 h-6 text-black" /> : <BookOpen className="w-6 h-6 text-black" />}
                 </div>
-                <h1 className="text-2xl font-semibold text-white tracking-tight mb-1">Hoş Geldin</h1>
-                <p className="text-zinc-500 text-sm font-medium">Kütüphane Yönetim Sistemine Giriş Yapın</p>
+                <h1 className="text-2xl font-semibold text-white tracking-tight mb-1">
+                  {isRegistering ? "Kayıt Ol" : "Hoş Geldin"}
+                </h1>
+                <p className="text-zinc-500 text-sm font-medium">
+                  {isRegistering ? "Yeni Bir Hesap Oluşturun" : "Kütüphane Yönetim Sistemine Giriş Yapın"}
+                </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                     <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-1.5 font-medium ml-1">Kullanıcı Adı</label>
                     <div className="relative">
@@ -80,13 +92,23 @@ export default function LoginPage() {
                     disabled={loading}
                     className="w-full py-3 rounded-xl bg-white text-black font-semibold text-sm shadow-sm hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                      {loading ? "Doğrulanıyor..." : "Oturumu Başlat"}
+                      {loading ? "İşleniyor..." : (isRegistering ? "Hesap Oluştur" : "Oturumu Başlat")}
                       {!loading && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
                   </button>
                 </div>
             </form>
 
-            <div className="mt-8 text-center pt-6 border-t border-zinc-800/80">
+            <div className="mt-6 text-center">
+              <button 
+                onClick={() => setIsRegistering(!isRegistering)}
+                type="button"
+                className="text-sm text-zinc-400 hover:text-white transition-colors"
+              >
+                {isRegistering ? "Zaten hesabınız var mı? Giriş Yapın" : "Hesabınız yok mu? Kayıt Olun"}
+              </button>
+            </div>
+
+            <div className="mt-6 text-center pt-6 border-t border-zinc-800/80">
                 <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">Golden State Güvencesinde</p>
             </div>
         </div>

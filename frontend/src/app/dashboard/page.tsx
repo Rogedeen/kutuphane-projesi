@@ -6,7 +6,7 @@ import {
   adminReset, adminAddJunk,
   getToken, getUserRole,
   createBook, updateBook, deleteBook,
-  createUser, deleteUser,
+  createUser, deleteUser, updateUserRole,
   removeToken, removeUserRole,
 } from "@/lib/api";
 import { Book, Sale, User } from "@/lib/types";
@@ -129,6 +129,17 @@ export default function AdminDashboard() {
       fetchData();
     } catch {
       toast.error("Kullanıcı silinemedi");
+    }
+  };
+
+  const handleToggleRole = async (id: number, currentRole: string, username: string) => {
+    const newRole = currentRole === "ADMIN" ? "USER" : "ADMIN";
+    try {
+      await updateUserRole(id, newRole);
+      toast.success(`${username} artık ${newRole === "ADMIN" ? "Yönetici" : "Standart Kullanıcı"}`);
+      fetchData();
+    } catch {
+      toast.error("Yetki değiştirilemedi");
     }
   };
 
@@ -333,7 +344,8 @@ export default function AdminDashboard() {
                       <th className="py-3 px-6 font-mono text-[10px] uppercase tracking-wider">ID</th>
                       <th className="py-3 px-6 font-mono text-[10px] uppercase tracking-wider">Kullanıcı Adı</th>
                       <th className="py-3 px-6 font-mono text-[10px] uppercase tracking-wider">Rol</th>
-                      <th className="py-3 px-6 font-mono text-[10px] uppercase tracking-wider text-right">İşlem</th>
+                      <th className="py-3 px-6 font-mono text-[10px] uppercase tracking-wider text-center">Yetki</th>
+                      <th className="py-3 px-6 font-mono text-[10px] uppercase tracking-wider text-right">Sil</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-zinc-800/50">
@@ -350,6 +362,23 @@ export default function AdminDashboard() {
                             <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium font-mono uppercase ${u.role === "ADMIN" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : "bg-zinc-800 text-zinc-400 border border-zinc-700"}`}>
                               {u.role === "ADMIN" ? "Yönetici" : "Kullanıcı"}
                             </span>
+                          </td>
+                          <td className="py-3 px-6 text-center">
+                            {u.username !== "admin" ? (
+                              <button
+                                onClick={() => handleToggleRole(u.id, u.role, u.username)}
+                                className={`px-2.5 py-1 rounded text-[10px] font-semibold font-mono transition-all opacity-0 group-hover:opacity-100 ${
+                                  u.role === "ADMIN"
+                                    ? "bg-zinc-800 text-zinc-300 hover:bg-red-500/10 hover:text-red-400 border border-zinc-700 hover:border-red-500/30"
+                                    : "bg-zinc-800 text-zinc-300 hover:bg-emerald-500/10 hover:text-emerald-400 border border-zinc-700 hover:border-emerald-500/30"
+                                }`}
+                                title={u.role === "ADMIN" ? "Yetkiyi Al" : "Yetki Ver"}
+                              >
+                                {u.role === "ADMIN" ? "↓ Yetkiyi Al" : "↑ Yetki Ver"}
+                              </button>
+                            ) : (
+                              <span className="text-[10px] text-zinc-600 font-mono">—</span>
+                            )}
                           </td>
                           <td className="py-3 px-6 text-right">
                             {u.username !== "admin" && (

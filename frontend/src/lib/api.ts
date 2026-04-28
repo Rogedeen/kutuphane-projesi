@@ -72,6 +72,20 @@ export async function login(username: string, password: string) {
   return res.json();
 }
 
+export async function registerUser(username: string, password: string) {
+  const res = await fetch(`${API_URL}/api/users`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password, role: "USER" }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.detail || "Kayıt başarısız");
+  }
+  return res.json();
+}
+
 // ─── Books ────────────────────────────────────────────────────────────────────
 
 export async function getBooks() {
@@ -114,6 +128,14 @@ export async function createUser(user: UserFormData) {
 
 export async function deleteUser(id: number) {
   return fetchWithAuth(`/api/users/${id}`, { method: "DELETE" });
+}
+
+export async function updateUserRole(id: number, role: "ADMIN" | "USER") {
+  return fetchWithAuth(`/api/users/${id}/role`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ role }),
+  });
 }
 
 // ─── Sales ────────────────────────────────────────────────────────────────────

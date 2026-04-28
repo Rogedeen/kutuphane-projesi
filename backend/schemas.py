@@ -22,6 +22,9 @@ class Token(BaseModel):
     token_type: str
     role: str
 
+class RoleUpdate(BaseModel):
+    role: RoleEnum
+
 class BookBase(BaseModel):
     title: str
     author: str

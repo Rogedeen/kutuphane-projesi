@@ -30,21 +30,27 @@ GOLDEN_BOOKS = [
 def seed_golden_data(db: Session):
     db.query(models.Sale).delete()
     db.query(models.Book).delete()
-    db.query(models.User).delete()
+    # DO NOT delete users during reset
     
-    admin_user = models.User(
-        username="admin",
-        hashed_password=get_password_hash("admin123"),
-        role=models.RoleEnum.ADMIN
-    )
-    reg_user = models.User(
-        username="user",
-        hashed_password=get_password_hash("user123"),
-        role=models.RoleEnum.USER
-    )
-    db.add(admin_user)
-    db.add(reg_user)
-    
+    admin_exists = db.query(models.User).filter(models.User.username == "admin").first()
+    if not admin_exists:
+        admin_user = models.User(
+            username="admin",
+            hashed_password=get_password_hash("admin123"),
+            role=models.RoleEnum.ADMIN
+        )
+        db.add(admin_user)
+        
+    user_exists = db.query(models.User).filter(models.User.username == "user").first()
+    if not user_exists:
+        reg_user = models.User(
+            username="user",
+            hashed_password=get_password_hash("user123"),
+            role=models.RoleEnum.USER
+        )
+        db.add(reg_user)
+        
+    db.commit()    
     for b in GOLDEN_BOOKS:
         book = models.Book(**b)
         db.add(book)

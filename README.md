@@ -8,16 +8,17 @@ Rol tabanlı erişim kontrolüne sahip modern kütüphane yönetim sistemi. Yön
 
 ### Yönetici (Admin)
 - **Kitap Yönetimi:** Kitap ekleme, düzenleme, silme
-- **Kullanıcı Yönetimi:** Kullanıcı oluşturma (ADMIN/USER rolü), silme
+- **Kullanıcı Yönetimi:** Kullanıcı oluşturma, silme, rol değiştirme (Yetki Ver / Yetkiyi Al)
+- **Rol Koruması:** Asıl `admin` hesabının rolü değiştirilemez, silinemez
 - **Satış Grafiği:** Gerçek zamanlı gelir istatistikleri
-- **Sistem Sıfırlama:** Veritabanını başlangıç durumuna döndürme (`Ctrl+Shift+R`)
+- **Sistem Sıfırlama:** Veritabanını başlangıç durumuna döndürme (Mevcut kullanıcılar korunur) (`Ctrl+Shift+R`)
 - **Test Verisi:** Toplu veri ekleme (`Ctrl+Shift+J`)
 
 ### Standart Kullanıcı (User)
+- **Kayıt Olma:** Login sayfasından yeni kullanıcı hesabı oluşturabilme
 - **Kitap Mağazası:** Tüm kitapları görüntüleme ve sepete ekleme
 - **Sepet Yönetimi:** Miktar güncelleme, ürün çıkarma
 - **Satın Alma:** Sepeti onaylama ve satış kaydı oluşturma
-- **Satış İstatistikleri:** Toplam satış ve gelir grafiği
 
 ---
 
@@ -123,6 +124,7 @@ kutuphane-projesi/
 | GET | `/api/users` | ADMIN | Kullanıcıları listele |
 | POST | `/api/users` | ADMIN | Kullanıcı oluştur |
 | DELETE | `/api/users/{id}` | ADMIN | Kullanıcı sil |
+| PATCH | `/api/users/{id}/role` | ADMIN | Rol değiştir (asıl admin korumalı) |
 
 ### Satışlar
 
