@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Aurelian Archive",
+  title: "Kütüphane Yönetim Sistemi",
   description: "Premium Bookstore Management Platform",
 };
 
