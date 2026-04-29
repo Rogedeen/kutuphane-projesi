@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { getBooks, createSale, getToken, getUserRole, removeToken, removeUserRole, adminReset } from "@/lib/api";
+import { getBooks, createSale, getToken, getUserRole, removeToken, removeUserRole, adminReset, adminAddJunk } from "@/lib/api";
 import { Book, CartItem } from "@/lib/types";
 import { BookOpen, ShoppingCart, LogOut, Plus, Minus, Trash2, ShoppingBag, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -35,6 +35,28 @@ export default function StorePage() {
     if (!token) { window.location.href = "/login"; return; }
     if (role === "ADMIN") { window.location.href = "/dashboard"; return; }
     fetchBooks();
+
+    const handleKeyDown = async (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.code === "KeyR") {
+        try {
+          await adminReset();
+          toast.success("Sistem başarıyla sıfırlandı!");
+          window.location.reload();
+        } catch {
+          toast.error("Sıfırlama başarısız oldu");
+        }
+      } else if (e.ctrlKey && e.shiftKey && e.code === "KeyJ") {
+        try {
+          await adminAddJunk();
+          toast.success("Örnek veriler eklendi!");
+          window.location.reload();
+        } catch {
+          toast.error("İşlem başarısız oldu");
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [fetchBooks]);
 
   // ─── Cart işlemleri ───────────────────────────────────────────────────────
@@ -137,11 +159,43 @@ export default function StorePage() {
         <div className="max-w-[1200px] mx-auto relative">
 
           {/* Header */}
-          <div className="mb-12 border-b border-zinc-800 pb-8">
-            <p className="text-zinc-500 tracking-wider text-[11px] font-semibold uppercase mb-1 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" /> KÜTÜPHANe
-            </p>
-            <h1 className="text-3xl font-semibold text-white tracking-tight">Kitap Mağazası</h1>
+          <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-12 border-b border-zinc-800 pb-8">
+            <div>
+              <p className="text-zinc-500 tracking-wider text-[11px] font-semibold uppercase mb-1 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" /> KÜTÜPHANe
+              </p>
+              <h1 className="text-3xl font-semibold text-white tracking-tight">Kitap Mağazası</h1>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={async () => {
+                  try {
+                    await adminReset();
+                    toast.success("Sistem başarıyla sıfırlandı!");
+                    window.location.reload();
+                  } catch {
+                    toast.error("Sıfırlama başarısız oldu");
+                  }
+                }}
+                className="px-4 py-2 rounded-lg flex items-center gap-2 text-xs font-medium border border-zinc-700 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all shadow-sm shrink-0"
+              >
+                <RefreshCw className="w-3.5 h-3.5" /> Sistemi Sıfırla
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await adminAddJunk();
+                    toast.success("Örnek veriler eklendi!");
+                    window.location.reload();
+                  } catch {
+                    toast.error("İşlem başarısız oldu");
+                  }
+                }}
+                className="px-4 py-2 rounded-lg flex items-center gap-2 text-xs font-medium bg-white text-black hover:bg-zinc-200 transition-all shadow-sm shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5" /> Örnek Veri Ekle
+              </button>
+            </div>
           </div>
 
           <div className="grid gap-8 lg:grid-cols-3">
