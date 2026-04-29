@@ -45,14 +45,6 @@ export default function StorePage() {
         } catch {
           toast.error("Sıfırlama başarısız oldu");
         }
-      } else if (e.ctrlKey && e.shiftKey && e.code === "KeyJ") {
-        try {
-          await adminAddJunk();
-          toast.success("Örnek veriler eklendi!");
-          window.location.reload();
-        } catch {
-          toast.error("İşlem başarısız oldu");
-        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -180,20 +172,6 @@ export default function StorePage() {
                 className="px-4 py-2 rounded-lg flex items-center gap-2 text-xs font-medium border border-zinc-700 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all shadow-sm shrink-0"
               >
                 <RefreshCw className="w-3.5 h-3.5" /> Sistemi Sıfırla
-              </button>
-              <button
-                onClick={async () => {
-                  try {
-                    await adminAddJunk();
-                    toast.success("Örnek veriler eklendi!");
-                    window.location.reload();
-                  } catch {
-                    toast.error("İşlem başarısız oldu");
-                  }
-                }}
-                className="px-4 py-2 rounded-lg flex items-center gap-2 text-xs font-medium bg-white text-black hover:bg-zinc-200 transition-all shadow-sm shrink-0"
-              >
-                <Plus className="w-3.5 h-3.5" /> Örnek Veri Ekle
               </button>
             </div>
           </div>
